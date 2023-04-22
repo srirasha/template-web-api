@@ -1,5 +1,6 @@
 using Application._Common.Models;
 using Application.Users.Commands.Create;
+using Application.Users.Commands.Delete.DeleteUserById;
 using Application.Users.Queries.GetAll;
 using Application.Users.Queries.GetById;
 using AutoMapper;
@@ -54,6 +55,14 @@ namespace Web.MyAPI.Controllers
             User user = await _mediator.Send(new GetUserByIdQuery(id), cancellationToken);
 
             return user != null ? Ok(_mapper.Map<UserModel>(user)) : NotFound();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteUserById(string id, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new DeleteUserByIdCommand() { Id = id }, cancellationToken);
+
+            return Ok();
         }
     }
 }

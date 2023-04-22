@@ -2,7 +2,11 @@
 using Domain.Entities;
 using Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence.Context
 {
@@ -27,6 +31,23 @@ namespace Infrastructure.Persistence.Context
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.AddInterceptors(_auditedEntitySaveChangesInterceptor);
+        }
+
+        public async Task DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default, bool throwOnEntityNotFound = false)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(entity);
+
+                EntityEntry track = Attach(entity);
+                track.State = EntityState.Deleted;
+                await SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (throwOnEntityNotFound)
+                    throw;
+            }
         }
 
         public DbSet<User> Users => Set<User>();

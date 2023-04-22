@@ -9,6 +9,8 @@ namespace Application._Common.Interfaces
     {
         DbSet<User> Users { get; }
 
+        Task DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default, bool throwOnNotFound = false);
+
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }
