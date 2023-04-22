@@ -20,7 +20,7 @@ namespace Application.Users.Commands.Delete.DeleteUserById
         {
             if (Guid.TryParse(request.Id, out Guid userId))
             {
-                await _context.DeleteAsync(new User() { Id = userId });
+                await _context.DeleteAsync(new User() { Id = userId }, cancellationToken);
             }
 
             return Unit.Value;
